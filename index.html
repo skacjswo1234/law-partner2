@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>법무법인 파트너</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fonts-archive/GmarketSans@latest/font.css">
     <style>
         * {
             margin: 0;
@@ -39,6 +40,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
         }
 
         .logo {
@@ -63,24 +65,47 @@
         }
 
         /* PC 네비게이션 */
-        nav {
-            display: flex;
-            gap: 30px;
+        .desktop-nav {
+            display: none;
         }
 
-        nav a {
+        .desktop-nav a {
             text-decoration: none;
             color: white;
-            font-weight: 500;
+            font-family: 'Gmarket Sans', sans-serif;
+            font-weight: 700;
             transition: color 0.3s;
         }
 
-        nav a:hover {
+        .desktop-nav a:hover {
             color: rgba(255, 255, 255, 0.8);
         }
 
-        /* 모바일 메뉴 */
-        .mobile-menu {
+        /* PC 메뉴 버튼 */
+        .menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-family: 'Gmarket Sans', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            transition: color 0.3s;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .menu-btn:hover {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* 사이드 메뉴 (모바일 + PC 공통) */
+        .side-menu {
             position: fixed;
             top: 0;
             right: -100%;
@@ -96,11 +121,11 @@
             flex-direction: column;
         }
 
-        .mobile-menu.active {
+        .side-menu.active {
             right: 0;
         }
 
-        .mobile-menu-close {
+        .side-menu-close {
             position: absolute;
             top: 20px;
             right: 20px;
@@ -111,27 +136,29 @@
             cursor: pointer;
         }
 
-        .mobile-menu nav {
+        .side-menu nav {
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
 
-        .mobile-menu nav a {
+        .side-menu nav a {
             color: white;
             font-size: 18px;
+            font-family: 'Gmarket Sans', sans-serif;
+            font-weight: 700;
             padding: 15px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .mobile-menu-logo {
+        .side-menu-logo {
             margin-top: auto;
             padding-top: 30px;
             text-align: center;
         }
 
-        .mobile-menu-logo img {
-            height: 50px;
+        .side-menu-logo img {
+            height: 80px;
             width: auto;
         }
 
@@ -428,7 +455,7 @@
         }
 
         .footer-logo img {
-            height: 50px;
+            height: 70px;
             width: auto;
         }
 
@@ -506,6 +533,10 @@
         @media (max-width: 768px) {
             .mobile-menu-btn {
                 display: block;
+            }
+
+            .menu-btn {
+                display: none;
             }
 
             nav.desktop-nav {
@@ -614,7 +645,10 @@
             <a href="#home" class="logo">
                 <img src="partner-logo.png" alt="법무법인 파트너">
             </a>
-            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+            <button class="menu-btn" onclick="toggleSideMenu()">
+                MENU <span>☰</span>
+            </button>
+            <button class="mobile-menu-btn" onclick="toggleSideMenu()">☰</button>
             <nav class="desktop-nav">
                 <a href="#home">홈</a>
                 <a href="#services">서비스</a>
@@ -624,19 +658,19 @@
         </div>
     </header>
 
-    <!-- 모바일 메뉴 오버레이 -->
-    <div class="menu-overlay" onclick="toggleMobileMenu()"></div>
+    <!-- 사이드 메뉴 오버레이 -->
+    <div class="menu-overlay" onclick="toggleSideMenu()"></div>
 
-    <!-- 모바일 메뉴 -->
-    <div class="mobile-menu" id="mobileMenu">
-        <button class="mobile-menu-close" onclick="toggleMobileMenu()">×</button>
+    <!-- 사이드 메뉴 (PC + 모바일 공통) -->
+    <div class="side-menu" id="sideMenu">
+        <button class="side-menu-close" onclick="toggleSideMenu()">×</button>
         <nav>
-            <a href="#home" onclick="toggleMobileMenu()">홈</a>
-            <a href="#services" onclick="toggleMobileMenu()">서비스</a>
-            <a href="#reviews" onclick="toggleMobileMenu()">후기</a>
-            <a href="#contact" onclick="toggleMobileMenu()">문의하기</a>
+            <a href="#home" onclick="toggleSideMenu()">홈</a>
+            <a href="#services" onclick="toggleSideMenu()">서비스</a>
+            <a href="#reviews" onclick="toggleSideMenu()">후기</a>
+            <a href="#contact" onclick="toggleSideMenu()">문의하기</a>
         </nav>
-        <div class="mobile-menu-logo">
+        <div class="side-menu-logo">
             <img src="partner-logo.png" alt="법무법인 파트너">
         </div>
     </div>
@@ -874,9 +908,9 @@
             updateConsultations();
         }, 2000);
 
-        // 모바일 메뉴 토글
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobileMenu');
+        // 사이드 메뉴 토글 (PC + 모바일 공통)
+        function toggleSideMenu() {
+            const menu = document.getElementById('sideMenu');
             const overlay = document.querySelector('.menu-overlay');
             menu.classList.toggle('active');
             overlay.classList.toggle('active');
