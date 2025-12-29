@@ -26,6 +26,34 @@ function doPost(e) {
     var sheet = spreadsheet.getActiveSheet();
     var postData = (e && e.parameter) ? e.parameter : {};
     
+    // 헤더가 없으면 자동으로 추가
+    var lastRow = sheet.getLastRow();
+    if (lastRow === 0) {
+      // 헤더 배열
+      var headers = [
+        "제출일시",
+        "이름",
+        "전화번호",
+        "직업",
+        "월소득",
+        "채무금액"
+      ];
+      
+      // 1행에 헤더 설정
+      sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+      
+      // 헤더 행 스타일 설정
+      var headerRange = sheet.getRange(1, 1, 1, headers.length);
+      headerRange.setFontWeight("bold");
+      headerRange.setBackground("#4285f4");
+      headerRange.setFontColor("#ffffff");
+      
+      // 열 너비 자동 조정
+      for (var i = 1; i <= headers.length; i++) {
+        sheet.autoResizeColumn(i);
+      }
+    }
+    
     // 현재 시간
     var timestamp = new Date();
     
