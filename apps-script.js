@@ -36,7 +36,9 @@ function doPost(e) {
         "전화번호",
         "직업",
         "월소득",
-        "채무금액"
+        "채무금액",
+        "상담가능시간",
+        "연체여부"
       ];
       
       // 1행에 헤더 설정
@@ -57,14 +59,16 @@ function doPost(e) {
     // 현재 시간
     var timestamp = new Date();
     
-    // 데이터 배열 (시트 헤더 순서에 맞춤: 제출일시, 이름, 전화번호, 직업, 월소득, 채무금액)
+    // 데이터 배열 (시트 헤더 순서에 맞춤: 제출일시, 이름, 전화번호, 직업, 월소득, 채무금액, 상담가능시간, 연체여부)
     var rowData = [
       timestamp,
       postData.name || "",
       postData.phone || "",
       postData.job || "",
       postData.income || "",
-      postData.debt || ""
+      postData.debt || "",
+      postData.consultation_time || "",
+      postData.overdue || ""
     ];
     
     // 시트에 데이터 추가
@@ -94,7 +98,7 @@ function sendEmailNotification(rowData) {
     var email = "bbong1019@gmail.com";
     var subject = "[법무법인 파트너] 새 문의가 접수되었습니다 [싸이렌24]";
     
-    var headers = ["제출일시", "이름", "전화번호", "직업", "월소득", "채무금액"];
+    var headers = ["제출일시", "이름", "전화번호", "직업", "월소득", "채무금액", "상담가능시간", "연체여부"];
     
     var bodyLines = [];
     bodyLines.push("새로운 상담 신청이 접수되었습니다.");
@@ -217,7 +221,9 @@ function setupSheetHeaders() {
       "전화번호",
       "직업",
       "월소득",
-      "채무금액"
+      "채무금액",
+      "상담가능시간",
+      "연체여부"
     ];
     
     // 1행에 헤더 설정
