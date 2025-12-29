@@ -1,3 +1,17 @@
+// ============================================
+// 배포 정보
+// ============================================
+// 배포 ID: AKfycbzgvEaTGFqp8lIZiwA7B5JwGI0RSiswi6f1X267lrtjWrrW9j1N1OvcnbRNpKLbAlhSRg
+// 웹앱 URL: https://script.google.com/macros/s/AKfycbzgvEaTGFqp8lIZiwA7B5JwGI0RSiswi6f1X267lrtjWrrW9j1N1OvcnbRNpKLbAlhSRg/exec
+// 구글 시트 URL: https://docs.google.com/spreadsheets/d/1MMNGsUWuX79K_g6G-uA4GNyhRmZaGcPb_8C-_dsnya4/edit
+// ============================================
+
+// 구글 시트 ID (URL에서 추출)
+var SPREADSHEET_ID = "1MMNGsUWuX79K_g6G-uA4GNyhRmZaGcPb_8C-_dsnya4";
+
+// 웹앱 URL
+var WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzgvEaTGFqp8lIZiwA7B5JwGI0RSiswi6f1X267lrtjWrrW9j1N1OvcnbRNpKLbAlhSRg/exec";
+
 // 웹앱 엔드포인트 응답
 function doGet(e) {
   var params = e && e.parameter ? e.parameter : {};
@@ -8,8 +22,9 @@ function doGet(e) {
 // 웹에서 폼 데이터를 받아서 시트에 추가하는 함수
 function doPost(e) {
   try {
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-    var postData = e.parameter || {};
+    var spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
+    var sheet = spreadsheet.getActiveSheet();
+    var postData = (e && e.parameter) ? e.parameter : {};
     
     // 현재 시간
     var timestamp = new Date();
@@ -49,7 +64,7 @@ function doPost(e) {
 function sendEmailNotification(rowData) {
   try {
     var email = "bbong1019@gmail.com";
-    var subject = "[법무법인 파트너] 새 문의가 접수되었습니다";
+    var subject = "[법무법인 파트너] 새 문의가 접수되었습니다 [싸이렌24]";
     
     var headers = ["제출일시", "이름", "전화번호", "직업", "월소득", "채무금액"];
     
@@ -68,7 +83,7 @@ function sendEmailNotification(rowData) {
     bodyLines.push("");
     bodyLines.push("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     bodyLines.push("");
-    bodyLines.push("구글 시트에서 확인: " + SpreadsheetApp.getActiveSpreadsheet().getUrl());
+    bodyLines.push("구글 시트에서 확인: https://docs.google.com/spreadsheets/d/" + SPREADSHEET_ID + "/edit");
     
     var htmlBody = bodyLines.join("<br>");
     
@@ -89,7 +104,8 @@ function sendEmailNotification(rowData) {
 function onFormSubmit(e) {
   try {
     var email = "bbong1019@gmail.com";
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    var spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
+    var sheet = spreadsheet.getActiveSheet();
     
     // e가 없거나 undefined인 경우 체크
     if (!e) {
@@ -141,7 +157,7 @@ function onFormSubmit(e) {
     bodyLines.push("");
     bodyLines.push("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     bodyLines.push("");
-    bodyLines.push("구글 시트에서 확인: " + SpreadsheetApp.getActiveSpreadsheet().getUrl());
+    bodyLines.push("구글 시트에서 확인: https://docs.google.com/spreadsheets/d/" + SPREADSHEET_ID + "/edit");
     
     // HTML 형식으로 이메일 전송
     var htmlBody = bodyLines.join("<br>");
@@ -163,7 +179,8 @@ function onFormSubmit(e) {
 // 시트 헤더 자동 설정 함수 (한 번만 실행하면 됩니다)
 function setupSheetHeaders() {
   try {
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    var spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
+    var sheet = spreadsheet.getActiveSheet();
     
     // 헤더 배열 (구글 폼은 첫 번째 열에 타임스탬프를 자동으로 넣습니다)
     var headers = [
