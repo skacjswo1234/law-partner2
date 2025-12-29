@@ -1,0 +1,20 @@
+User-agent: *
+Allow: /
+
+# 사이트맵 위치
+Sitemap: https://lawmariel2.co.kr/sitemap.xml
+
+# 크롤링 제외할 디렉토리 (필요시 추가)
+# Disallow: /admin/
+# Disallow: /private/
+
+# 검색 엔진 크롤러 설정
+User-agent: Googlebot
+Allow: /
+
+User-agent: NaverBot
+Allow: /
+
+User-agent: Yeti
+Allow: /
+
