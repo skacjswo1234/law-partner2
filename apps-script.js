@@ -96,7 +96,7 @@ function doPost(e) {
 function sendEmailNotification(rowData) {
   try {
     var email = "bbong1019@gmail.com";
-    var subject = "[법무법인 파트너] 새 문의가 접수되었습니다 [싸이렌24]";
+    var subject = "[법무법인 태윤] 새 문의가 접수되었습니다 [싸이렌24]";
     
     var headers = ["제출일시", "이름", "전화번호", "직업", "월소득", "채무금액", "상담가능시간", "연체여부"];
     
@@ -158,7 +158,7 @@ function onFormSubmit(e) {
     var rowData = sheet.getRange(lastRow, 1, 1, sheet.getLastColumn()).getValues()[0];
     
     // 이메일 제목
-    var subject = "[법무법인 파트너] 새 문의가 접수되었습니다";
+    var subject = "[법무법인 태윤] 새 문의가 접수되었습니다";
     
     // 이메일 본문 작성
     var bodyLines = [];
