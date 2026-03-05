@@ -1880,6 +1880,7 @@
         // 폼 제출 처리
         function handleSubmit(event) {
             event.preventDefault();
+            trackKarrotPurchase(100000);
             try {
                 var nameEl = document.getElementById('name');
                 var phoneEl = document.getElementById('phone');
@@ -1999,16 +2000,7 @@
                 modal.classList.add('show');
                 document.body.style.overflow = 'hidden';
             }
-            console.log('[당근픽셀] 상담문의 제출 완료 → purchase(100000) 예약');
-            setTimeout(function() {
-                try {
-                    if (window.karrotPixel && window.karrotPixel.track) {
-                        trackKarrotPurchase(100000);
-                    }
-                } catch (e) {
-                    console.error('[당근픽셀] showSuccessModal 픽셀 오류', e);
-                }
-            }, 100);
+            // purchase(100000)은 제출 버튼 클릭 시 handleSubmit/handleStickySubmit에서 호출 (사용자 제스처 필요)
         }
         
         // 성공 모달 닫기
@@ -2300,6 +2292,7 @@
                 overdue: overdue
             };
             
+            trackKarrotPurchase(100000);
             submitToGoogleSheet(formData, null);
             
             // 폼 초기화
