@@ -1966,21 +1966,29 @@
         // 당근마켓 픽셀 전환 추적 (동일 value 세션당 1회만 전송 - 중복 전환 방지)
         function trackKarrotPurchase(value) {
             var key = 'karrot_sent_' + value;
-            var label = value === 1 ? '전화상담' : (value === 100 ? '카톡상담' : (value === 10000 ? '상담문의제출' : 'purchase'));
+            var label = value === 1 ? '전화상담' : (value === 100 ? '카톡상담' : (value === 100000 ? '상담문의제출' : 'purchase'));
             if (sessionStorage.getItem(key)) {
                 console.log('[당근픽셀] purchase 중복 방지 (세션당 1회)', { value: value, label: label });
                 return;
             }
-            if (window.karrotPixel && window.karrotPixel.track) {
-                try {
-                    window.karrotPixel.track('purchase', { value: value, currency: 'KRW' });
-                    sessionStorage.setItem(key, '1');
-                    console.log('[당근픽셀] purchase 전송 완료', { value: value, label: label, currency: 'KRW' });
-                } catch (err) {
-                    console.warn('[당근픽셀] track 호출 오류 (전송 실패)', { value: value, label: label, error: err.message || err });
-                }
-            } else {
+            if (!window.karrotPixel || !window.karrotPixel.track) {
                 console.warn('[당근픽셀] karrotPixel 없음, 전송 생략', { value: value, label: label });
+                return;
+            }
+            var payload = { value: value, currency: 'KRW' };
+            try {
+                window.karrotPixel.track('purchase', payload);
+                sessionStorage.setItem(key, '1');
+                console.log('[당근픽셀] purchase 전송 완료', { value: value, label: label, currency: 'KRW' });
+            } catch (err) {
+                try {
+                    payload = { value: value };
+                    window.karrotPixel.track('purchase', payload);
+                    sessionStorage.setItem(key, '1');
+                    console.log('[당근픽셀] purchase 전송 완료 (currency 없이)', { value: value, label: label });
+                } catch (err2) {
+                    console.warn('[당근픽셀] track 호출 오류', { value: value, label: label, error: (err && err.message) || err });
+                }
             }
         }
         
@@ -1991,11 +1999,11 @@
                 modal.classList.add('show');
                 document.body.style.overflow = 'hidden';
             }
-            console.log('[당근픽셀] 상담문의 제출 완료 → purchase(10000) 예약');
+            console.log('[당근픽셀] 상담문의 제출 완료 → purchase(100000) 예약');
             setTimeout(function() {
                 try {
                     if (window.karrotPixel && window.karrotPixel.track) {
-                        trackKarrotPurchase(10000);
+                        trackKarrotPurchase(100000);
                     }
                 } catch (e) {
                     console.error('[당근픽셀] showSuccessModal 픽셀 오류', e);
