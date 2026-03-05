@@ -1361,10 +1361,12 @@
     <script src="https://karrot-pixel.business.daangn.com/karrot-pixel.js"></script>
     <script>
     (function() {
+        var pixelId = '1772604990583815001';
         function runViewPage() {
             if (window.karrotPixel && window.karrotPixel.init) {
-                window.karrotPixel.init('1772604990583815001');
+                window.karrotPixel.init(pixelId);
                 window.karrotPixel.track('ViewPage');
+                console.log('[당근픽셀] init 완료, ViewPage 전송', { pixelId: pixelId });
             } else {
                 setTimeout(runViewPage, 50);
             }
@@ -1940,17 +1942,20 @@
                     try {
                         showSuccessModal();
                         if (formElement && typeof formElement.reset === 'function') formElement.reset();
+                        console.log('[문의폼] 제출 처리 완료, 성공 모달 표시');
                     } catch (e) {
                         console.error('showSuccessModal:', e);
                     }
                     try {
                         if (form && form.parentNode) form.parentNode.removeChild(form);
+                        if (iframe && iframe.setAttribute) iframe.setAttribute('src', 'about:blank');
                     } catch (err) {}
                 }
                 
                 iframe.onload = function() { onDone(); };
                 setTimeout(onDone, 3500);
                 
+                console.log('[문의폼] 구글 시트로 제출 중... (콘솔에 script.googleusercontent.com 403 뜨면, 시트·이메일 정상이면 무시 가능)');
                 form.submit();
             } catch (err) {
                 console.error('submitToGoogleSheet:', err);
@@ -1961,18 +1966,28 @@
         // 당근마켓 픽셀 전환 추적 (동일 value 세션당 1회만 전송 - 중복 전환 방지)
         function trackKarrotPurchase(value) {
             var key = 'karrot_sent_' + value;
-            if (sessionStorage.getItem(key)) return;
+            var label = value === 1 ? '전화상담' : (value === 100 ? '카톡상담' : (value === 10000 ? '상담문의제출' : 'purchase'));
+            if (sessionStorage.getItem(key)) {
+                console.log('[당근픽셀] purchase 중복 방지 (세션당 1회)', { value: value, label: label });
+                return;
+            }
             if (window.karrotPixel && window.karrotPixel.track) {
                 window.karrotPixel.track('purchase', { value: value, currency: 'KRW' });
                 sessionStorage.setItem(key, '1');
+                console.log('[당근픽셀] purchase 전송 완료', { value: value, label: label, currency: 'KRW' });
+            } else {
+                console.warn('[당근픽셀] karrotPixel 없음, 전송 생략', { value: value, label: label });
             }
         }
         
         // 성공 모달 표시
         function showSuccessModal() {
             try {
+                console.log('[당근픽셀] 상담문의 제출 완료 → purchase(10000) 호출');
                 if (window.karrotPixel && window.karrotPixel.track) trackKarrotPurchase(10000);
-            } catch (e) {}
+            } catch (e) {
+                console.error('[당근픽셀] showSuccessModal 내 픽셀 오류', e);
+            }
             var modal = document.getElementById('successModal');
             if (modal) {
                 modal.classList.add('show');
@@ -1997,14 +2012,20 @@
             });
             
             // 당근마켓 픽셀: 전화 상담 버튼 클릭 (value 1, 세션당 1회)
-            document.querySelectorAll('a[href^="tel:"]').forEach(function(el) {
+            var telLinks = document.querySelectorAll('a[href^="tel:"]');
+            console.log('[당근픽셀] 전화 버튼 개수:', telLinks.length);
+            telLinks.forEach(function(el) {
                 el.addEventListener('click', function() {
+                    console.log('[당근픽셀] 전화 상담 버튼 클릭 → purchase(1) 호출');
                     trackKarrotPurchase(1);
                 });
             });
             // 당근마켓 픽셀: 카카오톡 상담 버튼 클릭 (value 100, 세션당 1회)
-            document.querySelectorAll('a[href*="pf.kakao.com"]').forEach(function(el) {
+            var kakaoLinks = document.querySelectorAll('a[href*="pf.kakao.com"]');
+            console.log('[당근픽셀] 카톡 버튼 개수:', kakaoLinks.length);
+            kakaoLinks.forEach(function(el) {
                 el.addEventListener('click', function() {
+                    console.log('[당근픽셀] 카톡 상담 버튼 클릭 → purchase(100) 호출');
                     trackKarrotPurchase(100);
                 });
             });
