@@ -1972,9 +1972,13 @@
                 return;
             }
             if (window.karrotPixel && window.karrotPixel.track) {
-                window.karrotPixel.track('purchase', { value: value, currency: 'KRW' });
-                sessionStorage.setItem(key, '1');
-                console.log('[당근픽셀] purchase 전송 완료', { value: value, label: label, currency: 'KRW' });
+                try {
+                    window.karrotPixel.track('purchase', { value: value, currency: 'KRW' });
+                    sessionStorage.setItem(key, '1');
+                    console.log('[당근픽셀] purchase 전송 완료', { value: value, label: label, currency: 'KRW' });
+                } catch (err) {
+                    console.warn('[당근픽셀] track 호출 오류 (전송 실패)', { value: value, label: label, error: err.message || err });
+                }
             } else {
                 console.warn('[당근픽셀] karrotPixel 없음, 전송 생략', { value: value, label: label });
             }
@@ -1982,17 +1986,21 @@
         
         // 성공 모달 표시
         function showSuccessModal() {
-            try {
-                console.log('[당근픽셀] 상담문의 제출 완료 → purchase(10000) 호출');
-                if (window.karrotPixel && window.karrotPixel.track) trackKarrotPurchase(10000);
-            } catch (e) {
-                console.error('[당근픽셀] showSuccessModal 내 픽셀 오류', e);
-            }
             var modal = document.getElementById('successModal');
             if (modal) {
                 modal.classList.add('show');
                 document.body.style.overflow = 'hidden';
             }
+            console.log('[당근픽셀] 상담문의 제출 완료 → purchase(10000) 예약');
+            setTimeout(function() {
+                try {
+                    if (window.karrotPixel && window.karrotPixel.track) {
+                        trackKarrotPurchase(10000);
+                    }
+                } catch (e) {
+                    console.error('[당근픽셀] showSuccessModal 픽셀 오류', e);
+                }
+            }, 100);
         }
         
         // 성공 모달 닫기
