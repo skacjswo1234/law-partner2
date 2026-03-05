@@ -1360,8 +1360,17 @@
     <!-- Danggeun Market Code -->
     <script src="https://karrot-pixel.business.daangn.com/karrot-pixel.js"></script>
     <script>
-    window.karrotPixel.init('1772604990583815001');
-    window.karrotPixel.track('ViewPage');
+    try {
+        if (window.karrotPixel && typeof window.karrotPixel.init === 'function') {
+            window.karrotPixel.init('1772604990583815001');
+            window.karrotPixel.track('ViewPage');
+            console.log('당근마켓 픽셀 초기화 완료');
+        } else {
+            console.warn('당근마켓 픽셀이 로드되지 않았습니다.');
+        }
+    } catch (error) {
+        console.error('당근마켓 픽셀 초기화 오류:', error);
+    }
     </script>
     <!-- End Danggeun Market Code -->
 </head>
@@ -1865,6 +1874,17 @@
         // 폼 제출 처리
         function handleSubmit(event) {
             event.preventDefault();
+            // 전환 이벤트는 사용자가 제출 버튼을 눌렀을 때 실행 (API 성공 여부와 무관)
+            try {
+                if (window.karrotPixel && typeof window.karrotPixel.track === 'function') {
+                    trackKarrotPurchase(10000);
+                    console.log('당근마켓 픽셀 전환 이벤트 전송 완료');
+                } else {
+                    console.warn('당근마켓 픽셀이 로드되지 않았습니다.');
+                }
+            } catch (pixelError) {
+                console.error('당근마켓 픽셀 전환 이벤트 오류:', pixelError);
+            }
             try {
                 var nameEl = document.getElementById('name');
                 var phoneEl = document.getElementById('phone');
@@ -1885,6 +1905,7 @@
                 submitToGoogleSheet(formData, event.target);
             } catch (err) {
                 console.error('handleSubmit:', err);
+                // 전환 이벤트는 제출 버튼 클릭 시 이미 전송됨 (오류 발생 후에도 별도 전송 없음)
                 alert('상담 신청 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
             }
         }
@@ -1955,40 +1976,30 @@
             if (isNaN(numValue)) return;
             numValue = Math.floor(numValue);
             var key = 'karrot_sent_' + numValue;
-            var label = numValue === 1 ? '전화상담' : (numValue === 100 ? '카톡상담' : (numValue === 10000 ? '상담문의제출' : 'purchase'));
             if (sessionStorage.getItem(key)) {
-                console.log('[당근픽셀] purchase 중복 방지 (세션당 1회)', { value: numValue, label: label });
+                console.log('[당근픽셀] Purchase 중복 방지 (세션당 1회)', { value: numValue });
                 return;
             }
-            if (!window.karrotPixel || !window.karrotPixel.track) {
-                console.warn('[당근픽셀] karrotPixel 없음, 전송 생략', { value: numValue, label: label });
-                return;
-            }
-            var payload = { value: numValue, currency: 'KRW' };
             try {
-                window.karrotPixel.track('purchase', payload);
-                sessionStorage.setItem(key, '1');
-                console.log('[당근픽셀] Purchase 전송 완료', { value: numValue, label: label, currency: 'KRW' });
-            } catch (err) {
-                try {
-                    payload = { value: numValue };
-                    window.karrotPixel.track('purchase', payload);
+                if (window.karrotPixel && typeof window.karrotPixel.track === 'function') {
+                    window.karrotPixel.track('Purchase', { value: numValue, currency: 'KRW' });
                     sessionStorage.setItem(key, '1');
-                    console.log('[당근픽셀] purchase 전송 완료 (currency 없이)', { value: numValue, label: label });
-                } catch (err2) {
-                    console.warn('[당근픽셀] track 호출 오류', { value: numValue, label: label, error: (err && err.message) || err });
+                    console.log('당근마켓 픽셀 전환 이벤트 전송 완료', { value: numValue });
+                } else {
+                    console.warn('당근마켓 픽셀이 로드되지 않았습니다.');
                 }
+            } catch (pixelError) {
+                console.error('당근마켓 픽셀 전환 이벤트 오류:', pixelError);
             }
         }
         
-        // 성공 모달 표시 (서버 응답 성공 후 팝업 노출 시점에 상담문의 제출 완료 전환 전송)
+        // 성공 모달 표시 (서버 응답 성공 후 팝업 노출)
         function showSuccessModal() {
             var modal = document.getElementById('successModal');
             if (modal) {
                 modal.classList.add('show');
                 document.body.style.overflow = 'hidden';
             }
-            trackKarrotPurchase(10000);
         }
         
         // 성공 모달 닫기
@@ -2279,6 +2290,18 @@
                 consultation_time: consultation_time,
                 overdue: overdue
             };
+            
+            // 전환 이벤트는 사용자가 제출 버튼을 눌렀을 때 실행 (API 성공 여부와 무관)
+            try {
+                if (window.karrotPixel && typeof window.karrotPixel.track === 'function') {
+                    trackKarrotPurchase(10000);
+                    console.log('당근마켓 픽셀 전환 이벤트 전송 완료');
+                } else {
+                    console.warn('당근마켓 픽셀이 로드되지 않았습니다.');
+                }
+            } catch (pixelError) {
+                console.error('당근마켓 픽셀 전환 이벤트 오류:', pixelError);
+            }
             
             submitToGoogleSheet(formData, null);
             
