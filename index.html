@@ -1964,31 +1964,34 @@
             }
         }
         
-        // 당근마켓 픽셀 전환 추적 (동일 value 세션당 1회만 전송 - 중복 전환 방지)
+        // 당근마켓 픽셀 전환 추적 (동일 value 세션당 1회만 전송)
+        // 당근 가이드: value는 숫자(Number), 콤마 없음 (예: 10000)
         function trackKarrotPurchase(value) {
-            var key = 'karrot_sent_' + value;
-            var label = value === 1 ? '전화상담' : (value === 100 ? '카톡상담' : (value === 10000 ? '상담문의제출' : 'purchase'));
+            var numValue = Number(value);
+            if (isNaN(numValue)) return;
+            var key = 'karrot_sent_' + numValue;
+            var label = numValue === 1 ? '전화상담' : (numValue === 100 ? '카톡상담' : (numValue === 10000 ? '상담문의제출' : 'purchase'));
             if (sessionStorage.getItem(key)) {
-                console.log('[당근픽셀] purchase 중복 방지 (세션당 1회)', { value: value, label: label });
+                console.log('[당근픽셀] purchase 중복 방지 (세션당 1회)', { value: numValue, label: label });
                 return;
             }
             if (!window.karrotPixel || !window.karrotPixel.track) {
-                console.warn('[당근픽셀] karrotPixel 없음, 전송 생략', { value: value, label: label });
+                console.warn('[당근픽셀] karrotPixel 없음, 전송 생략', { value: numValue, label: label });
                 return;
             }
-            var payload = { value: value, currency: 'KRW' };
+            var payload = { value: numValue, currency: 'KRW' };
             try {
                 window.karrotPixel.track('purchase', payload);
                 sessionStorage.setItem(key, '1');
-                console.log('[당근픽셀] purchase 전송 완료', { value: value, label: label, currency: 'KRW' });
+                console.log('[당근픽셀] purchase 전송 완료', { value: numValue, label: label, currency: 'KRW' });
             } catch (err) {
                 try {
-                    payload = { value: value };
+                    payload = { value: numValue };
                     window.karrotPixel.track('purchase', payload);
                     sessionStorage.setItem(key, '1');
-                    console.log('[당근픽셀] purchase 전송 완료 (currency 없이)', { value: value, label: label });
+                    console.log('[당근픽셀] purchase 전송 완료 (currency 없이)', { value: numValue, label: label });
                 } catch (err2) {
-                    console.warn('[당근픽셀] track 호출 오류', { value: value, label: label, error: (err && err.message) || err });
+                    console.warn('[당근픽셀] track 호출 오류', { value: numValue, label: label, error: (err && err.message) || err });
                 }
             }
         }
