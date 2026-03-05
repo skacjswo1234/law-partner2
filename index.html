@@ -1880,7 +1880,7 @@
         // 폼 제출 처리
         function handleSubmit(event) {
             event.preventDefault();
-            trackKarrotPurchase(100000);
+            trackKarrotPurchase(10000);
             try {
                 var nameEl = document.getElementById('name');
                 var phoneEl = document.getElementById('phone');
@@ -1967,7 +1967,7 @@
         // 당근마켓 픽셀 전환 추적 (동일 value 세션당 1회만 전송 - 중복 전환 방지)
         function trackKarrotPurchase(value) {
             var key = 'karrot_sent_' + value;
-            var label = value === 1 ? '전화상담' : (value === 100 ? '카톡상담' : (value === 100000 ? '상담문의제출' : 'purchase'));
+            var label = value === 1 ? '전화상담' : (value === 100 ? '카톡상담' : (value === 10000 ? '상담문의제출' : 'purchase'));
             if (sessionStorage.getItem(key)) {
                 console.log('[당근픽셀] purchase 중복 방지 (세션당 1회)', { value: value, label: label });
                 return;
@@ -2000,7 +2000,7 @@
                 modal.classList.add('show');
                 document.body.style.overflow = 'hidden';
             }
-            // purchase(100000)은 제출 버튼 클릭 시 handleSubmit/handleStickySubmit에서 호출 (사용자 제스처 필요)
+            // purchase(10000)은 제출 버튼 클릭 시 handleSubmit/handleStickySubmit에서 호출 (사용자 제스처 필요)
         }
         
         // 성공 모달 닫기
@@ -2292,7 +2292,7 @@
                 overdue: overdue
             };
             
-            trackKarrotPurchase(100000);
+            trackKarrotPurchase(10000);
             submitToGoogleSheet(formData, null);
             
             // 폼 초기화
