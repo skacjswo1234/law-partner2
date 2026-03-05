@@ -1360,23 +1360,8 @@
     <!-- Danggeun Market Code -->
     <script src="https://karrot-pixel.business.daangn.com/karrot-pixel.js"></script>
     <script>
-    (function() {
-        var pixelId = '1772604990583815001';
-        function runViewPage() {
-            if (window.karrotPixel && window.karrotPixel.init) {
-                window.karrotPixel.init(pixelId);
-                window.karrotPixel.track('ViewPage');
-                console.log('[당근픽셀] init 완료, ViewPage 전송', { pixelId: pixelId });
-            } else {
-                setTimeout(runViewPage, 50);
-            }
-        }
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', runViewPage);
-        } else {
-            runViewPage();
-        }
-    })();
+    window.karrotPixel.init('1772604990583815001');
+    window.karrotPixel.track('ViewPage');
     </script>
     <!-- End Danggeun Market Code -->
 </head>
@@ -1880,7 +1865,6 @@
         // 폼 제출 처리
         function handleSubmit(event) {
             event.preventDefault();
-            trackKarrotPurchase(10000);
             try {
                 var nameEl = document.getElementById('name');
                 var phoneEl = document.getElementById('phone');
@@ -1965,10 +1949,11 @@
         }
         
         // 당근마켓 픽셀 전환 추적 (동일 value 세션당 1회만 전송)
-        // 당근 가이드: value는 숫자(Number), 콤마 없음 (예: 10000)
+        // 데이터 타입: value는 반드시 숫자(Number). 문자열 금지. 숫자 내 콤마(,) 미포함 (예: 10000 (O), '10,000' (X))
         function trackKarrotPurchase(value) {
             var numValue = Number(value);
             if (isNaN(numValue)) return;
+            numValue = Math.floor(numValue);
             var key = 'karrot_sent_' + numValue;
             var label = numValue === 1 ? '전화상담' : (numValue === 100 ? '카톡상담' : (numValue === 10000 ? '상담문의제출' : 'purchase'));
             if (sessionStorage.getItem(key)) {
@@ -1981,13 +1966,13 @@
             }
             var payload = { value: numValue, currency: 'KRW' };
             try {
-                window.karrotPixel.track('Purchase', payload);
+                window.karrotPixel.track('purchase', payload);
                 sessionStorage.setItem(key, '1');
                 console.log('[당근픽셀] Purchase 전송 완료', { value: numValue, label: label, currency: 'KRW' });
             } catch (err) {
                 try {
                     payload = { value: numValue };
-                    window.karrotPixel.track('Purchase', payload);
+                    window.karrotPixel.track('purchase', payload);
                     sessionStorage.setItem(key, '1');
                     console.log('[당근픽셀] purchase 전송 완료 (currency 없이)', { value: numValue, label: label });
                 } catch (err2) {
@@ -1996,14 +1981,14 @@
             }
         }
         
-        // 성공 모달 표시
+        // 성공 모달 표시 (서버 응답 성공 후 팝업 노출 시점에 상담문의 제출 완료 전환 전송)
         function showSuccessModal() {
             var modal = document.getElementById('successModal');
             if (modal) {
                 modal.classList.add('show');
                 document.body.style.overflow = 'hidden';
             }
-            // purchase(10000)은 제출 버튼 클릭 시 handleSubmit/handleStickySubmit에서 호출 (사용자 제스처 필요)
+            trackKarrotPurchase(10000);
         }
         
         // 성공 모달 닫기
@@ -2295,7 +2280,6 @@
                 overdue: overdue
             };
             
-            trackKarrotPurchase(10000);
             submitToGoogleSheet(formData, null);
             
             // 폼 초기화
