@@ -1889,34 +1889,52 @@
             submitToGoogleSheet(formData, event.target);
         }
         
-        // 구글 시트로 데이터 전송
+        // 구글 시트로 데이터 전송 (iframe POST 방식 - CORS 이슈 없이 동작)
         function submitToGoogleSheet(formData, formElement) {
             const webAppUrl = 'https://script.google.com/macros/s/AKfycbzgvEaTGFqp8lIZiwA7B5JwGI0RSiswi6f1X267lrtjWrrW9j1N1OvcnbRNpKLbAlhSRg/exec';
             
-            // 폼 데이터를 URL 인코딩
-            const params = new URLSearchParams();
-            Object.keys(formData).forEach(key => {
-                params.append(key, formData[key]);
+            var iframe = document.getElementById('formSubmitIframe');
+            if (!iframe) {
+                iframe = document.createElement('iframe');
+                iframe.id = 'formSubmitIframe';
+                iframe.name = 'formSubmitIframe';
+                iframe.style.cssText = 'position:absolute;width:0;height:0;border:0;visibility:hidden;';
+                document.body.appendChild(iframe);
+            }
+            
+            var form = document.createElement('form');
+            form.action = webAppUrl;
+            form.method = 'POST';
+            form.target = 'formSubmitIframe';
+            form.style.display = 'none';
+            
+            Object.keys(formData).forEach(function(key) {
+                var input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = formData[key] || '';
+                form.appendChild(input);
             });
             
-            fetch(webAppUrl, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: params.toString()
-            })
-            .then(() => {
-                showSuccessModal();
-                if (formElement) {
-                    formElement.reset();
+            document.body.appendChild(form);
+            
+            var done = false;
+            function onDone() {
+                if (done) return;
+                done = true;
+                try {
+                    showSuccessModal();
+                    if (formElement) formElement.reset();
+                } catch (e) {
+                    console.error(e);
                 }
-            })
-            .catch(error => {
-                console.error('오류:', error);
-                alert('상담 신청 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-            });
+                if (form.parentNode) form.parentNode.removeChild(form);
+            }
+            
+            iframe.onload = function() { onDone(); };
+            setTimeout(onDone, 3500);
+            
+            form.submit();
         }
         
         // 당근마켓 픽셀 전환 추적 (동일 value 세션당 1회만 전송 - 중복 전환 방지)
