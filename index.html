@@ -1981,13 +1981,13 @@
             }
             var payload = { value: numValue, currency: 'KRW' };
             try {
-                window.karrotPixel.track('purchase', payload);
+                window.karrotPixel.track('Purchase', payload);
                 sessionStorage.setItem(key, '1');
-                console.log('[당근픽셀] purchase 전송 완료', { value: numValue, label: label, currency: 'KRW' });
+                console.log('[당근픽셀] Purchase 전송 완료', { value: numValue, label: label, currency: 'KRW' });
             } catch (err) {
                 try {
                     payload = { value: numValue };
-                    window.karrotPixel.track('purchase', payload);
+                    window.karrotPixel.track('Purchase', payload);
                     sessionStorage.setItem(key, '1');
                     console.log('[당근픽셀] purchase 전송 완료 (currency 없이)', { value: numValue, label: label });
                 } catch (err2) {
