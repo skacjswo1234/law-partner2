@@ -1726,6 +1726,9 @@
         </div>
     </div>
 
+    <!-- 폼 제출용 숨은 iframe (구글 시트 전송) -->
+    <iframe id="formSubmitIframe" name="formSubmitIframe" title="폼 전송" style="position:absolute;width:0;height:0;border:0;visibility:hidden;"></iframe>
+
     <script>
         // 개인정보 마스킹 함수
         function maskInfo(text, type) {
@@ -1875,66 +1878,84 @@
         // 폼 제출 처리
         function handleSubmit(event) {
             event.preventDefault();
-            
-            const formData = {
-                name: document.getElementById('name').value,
-                phone: document.getElementById('phone').value,
-                job: document.getElementById('job').value,
-                income: document.getElementById('income').value,
-                debt: document.getElementById('debt').value,
-                consultation_time: document.getElementById('consultation_time').value,
-                overdue: document.getElementById('overdue').value
-            };
-            
-            submitToGoogleSheet(formData, event.target);
+            try {
+                var nameEl = document.getElementById('name');
+                var phoneEl = document.getElementById('phone');
+                var jobEl = document.getElementById('job');
+                var incomeEl = document.getElementById('income');
+                var debtEl = document.getElementById('debt');
+                var timeEl = document.getElementById('consultation_time');
+                var overdueEl = document.getElementById('overdue');
+                var formData = {
+                    name: nameEl ? nameEl.value : '',
+                    phone: phoneEl ? phoneEl.value : '',
+                    job: jobEl ? jobEl.value : '',
+                    income: incomeEl ? incomeEl.value : '',
+                    debt: debtEl ? debtEl.value : '',
+                    consultation_time: timeEl ? timeEl.value : '',
+                    overdue: overdueEl ? overdueEl.value : ''
+                };
+                submitToGoogleSheet(formData, event.target);
+            } catch (err) {
+                console.error('handleSubmit:', err);
+                alert('상담 신청 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+            }
         }
         
         // 구글 시트로 데이터 전송 (iframe POST 방식 - CORS 이슈 없이 동작)
         function submitToGoogleSheet(formData, formElement) {
-            const webAppUrl = 'https://script.google.com/macros/s/AKfycbzgvEaTGFqp8lIZiwA7B5JwGI0RSiswi6f1X267lrtjWrrW9j1N1OvcnbRNpKLbAlhSRg/exec';
-            
-            var iframe = document.getElementById('formSubmitIframe');
-            if (!iframe) {
-                iframe = document.createElement('iframe');
-                iframe.id = 'formSubmitIframe';
-                iframe.name = 'formSubmitIframe';
-                iframe.style.cssText = 'position:absolute;width:0;height:0;border:0;visibility:hidden;';
-                document.body.appendChild(iframe);
-            }
-            
-            var form = document.createElement('form');
-            form.action = webAppUrl;
-            form.method = 'POST';
-            form.target = 'formSubmitIframe';
-            form.style.display = 'none';
-            
-            Object.keys(formData).forEach(function(key) {
-                var input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = key;
-                input.value = formData[key] || '';
-                form.appendChild(input);
-            });
-            
-            document.body.appendChild(form);
-            
-            var done = false;
-            function onDone() {
-                if (done) return;
-                done = true;
-                try {
-                    showSuccessModal();
-                    if (formElement) formElement.reset();
-                } catch (e) {
-                    console.error(e);
+            try {
+                var webAppUrl = 'https://script.google.com/macros/s/AKfycbzgvEaTGFqp8lIZiwA7B5JwGI0RSiswi6f1X267lrtjWrrW9j1N1OvcnbRNpKLbAlhSRg/exec';
+                
+                var iframe = document.getElementById('formSubmitIframe');
+                if (!iframe) {
+                    iframe = document.createElement('iframe');
+                    iframe.id = 'formSubmitIframe';
+                    iframe.name = 'formSubmitIframe';
+                    iframe.setAttribute('title', 'form');
+                    iframe.style.cssText = 'position:absolute;width:0;height:0;border:0;visibility:hidden;';
+                    document.body.appendChild(iframe);
                 }
-                if (form.parentNode) form.parentNode.removeChild(form);
+                
+                var form = document.createElement('form');
+                form.action = webAppUrl;
+                form.method = 'POST';
+                form.target = 'formSubmitIframe';
+                form.style.display = 'none';
+                
+                Object.keys(formData).forEach(function(key) {
+                    var input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = key;
+                    input.value = formData[key] || '';
+                    form.appendChild(input);
+                });
+                
+                document.body.appendChild(form);
+                
+                var done = false;
+                function onDone() {
+                    if (done) return;
+                    done = true;
+                    try {
+                        showSuccessModal();
+                        if (formElement && typeof formElement.reset === 'function') formElement.reset();
+                    } catch (e) {
+                        console.error('showSuccessModal:', e);
+                    }
+                    try {
+                        if (form && form.parentNode) form.parentNode.removeChild(form);
+                    } catch (err) {}
+                }
+                
+                iframe.onload = function() { onDone(); };
+                setTimeout(onDone, 3500);
+                
+                form.submit();
+            } catch (err) {
+                console.error('submitToGoogleSheet:', err);
+                alert('상담 신청 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
             }
-            
-            iframe.onload = function() { onDone(); };
-            setTimeout(onDone, 3500);
-            
-            form.submit();
         }
         
         // 당근마켓 픽셀 전환 추적 (동일 value 세션당 1회만 전송 - 중복 전환 방지)
@@ -1949,10 +1970,14 @@
         
         // 성공 모달 표시
         function showSuccessModal() {
-            trackKarrotPurchase(10000); // 상담문의 신청서 제출 완료 전환
-            const modal = document.getElementById('successModal');
-            modal.classList.add('show');
-            document.body.style.overflow = 'hidden'; // 스크롤 방지
+            try {
+                if (window.karrotPixel && window.karrotPixel.track) trackKarrotPurchase(10000);
+            } catch (e) {}
+            var modal = document.getElementById('successModal');
+            if (modal) {
+                modal.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            }
         }
         
         // 성공 모달 닫기
