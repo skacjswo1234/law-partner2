@@ -1359,22 +1359,10 @@
 
     <!-- Danggeun Market Code -->
     <script src="https://karrot-pixel.business.daangn.com/karrot-pixel.js"></script>
-    <script>
-    try {
-        if (window.karrotPixel && typeof window.karrotPixel.init === 'function') {
-            window.karrotPixel.init('1772604990583815001');
-            window.karrotPixel.track('ViewPage');
-            console.log('당근마켓 픽셀 초기화 완료');
-        } else {
-            console.warn('당근마켓 픽셀이 로드되지 않았습니다.');
-        }
-    } catch (error) {
-        console.error('당근마켓 픽셀 초기화 오류:', error);
-    }
-    </script>
     <!-- End Danggeun Market Code -->
 </head>
 <body>
+    <script>window.karrotPixel.init('1772604990583815001');window.karrotPixel.track('ViewPage');</script>
     <!-- 헤더 -->
     <header>
         <div class="header-container">
