@@ -1970,9 +1970,12 @@
             }
             try {
                 if (window.karrotPixel && typeof window.karrotPixel.track === 'function') {
-                    window.karrotPixel.track('Purchase', { value: numValue, currency: 'KRW' });
+                    var payload = { value: numValue, currency: 'KRW' };
+                    // 테스트용: 전송 직전 payload 확인 (총금액 value 포함 여부 체크)
+                    console.log('[당근픽셀] Purchase 전송 직전 → event: "Purchase", payload:', payload, '| 총금액(value):', numValue, '원');
+                    window.karrotPixel.track('Purchase', payload);
                     sessionStorage.setItem(key, '1');
-                    console.log('당근마켓 픽셀 전환 이벤트 전송 완료', { value: numValue });
+                    console.log('[당근픽셀] Purchase 전송 완료 | 총금액(value):', numValue, '원');
                 } else {
                     console.warn('당근마켓 픽셀이 로드되지 않았습니다.');
                 }
