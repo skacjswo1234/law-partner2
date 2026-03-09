@@ -1957,25 +1957,34 @@
             }
         }
         
-        // 당근마켓 픽셀 전환 추적 (동일 value 세션당 1회만 전송)
-        // 데이터 타입: value는 반드시 숫자(Number). 문자열 금지. 숫자 내 콤마(,) 미포함 (예: 10000 (O), '10,000' (X))
-        function trackKarrotPurchase(value) {
-            var numValue = Number(value);
+        // 당근마켓 픽셀 전환 추적 (당근 공식: total_price, total_quantity, products / 동일 금액 세션당 1회만 전송)
+        // 파라미터는 모두 문자(string) 타입으로 전달 (당근 비즈스쿨 문서 기준)
+        function trackKarrotPurchase(priceValue) {
+            var numValue = Number(priceValue);
             if (isNaN(numValue)) return;
             numValue = Math.floor(numValue);
             var key = 'karrot_sent_' + numValue;
             if (sessionStorage.getItem(key)) {
-                console.log('[당근픽셀] Purchase 중복 방지 (세션당 1회)', { value: numValue });
+                console.log('[당근픽셀] Purchase 중복 방지 (세션당 1회)', { total_price: String(numValue) });
                 return;
             }
             try {
                 if (window.karrotPixel && typeof window.karrotPixel.track === 'function') {
-                    var payload = { value: numValue, currency: 'KRW' };
-                    // 테스트용: 전송 직전 payload 확인 (총금액 value 포함 여부 체크)
-                    console.log('[당근픽셀] Purchase 전송 직전 → event: "Purchase", payload:', payload, '| 총금액(value):', numValue, '원');
+                    var totalPriceStr = String(numValue);
+                    var payload = {
+                        'total_price': totalPriceStr,
+                        'total_quantity': '1',
+                        'products': [{
+                            'id': 'conversion',
+                            'name': '상담전환',
+                            'quantity': '1',
+                            'price': totalPriceStr
+                        }]
+                    };
+                    console.log('[당근픽셀] Purchase 전송 직전 → event: "Purchase", payload:', payload, '| total_price:', totalPriceStr, '원');
                     window.karrotPixel.track('Purchase', payload);
                     sessionStorage.setItem(key, '1');
-                    console.log('[당근픽셀] Purchase 전송 완료 | 총금액(value):', numValue, '원');
+                    console.log('[당근픽셀] Purchase 전송 완료 | total_price:', totalPriceStr, '원');
                 } else {
                     console.warn('당근마켓 픽셀이 로드되지 않았습니다.');
                 }
