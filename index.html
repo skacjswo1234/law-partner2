@@ -1243,13 +1243,13 @@
                 display: none !important;
             }
 
-            /* 모바일 하단 띠지 */
+            /* 모바일 하단 띠지: 배경 노란색, 텍스트 진한 네이비 */
             .mobile-sticky-bar {
                 position: fixed;
                 bottom: 0;
                 left: 0;
                 width: 100%;
-                background: transparent;
+                background: #FEE500;
                 z-index: 1000;
                 padding: 0;
                 display: block;
@@ -1259,40 +1259,12 @@
                 display: flex;
                 width: 100%;
                 height: 60px;
-            }
-
-            .mobile-sticky-bar-left {
-                flex: 1;
-                background: #FEE500;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border-radius: 0;
-            }
-
-            .mobile-sticky-bar-left a {
-                color: #000000;
-                font-size: 16px;
-                font-weight: bold;
-                text-decoration: none;
-                width: 100%;
-                height: 100%;
-                display: flex;
                 align-items: center;
                 justify-content: center;
             }
 
-            .mobile-sticky-bar-right {
-                flex: 1;
-                background: #0d0d1f;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border-radius: 0;
-            }
-
-            .mobile-sticky-bar-right a {
-                color: white;
+            .mobile-sticky-bar-cta {
+                color: #0d0d1f;
                 font-size: 16px;
                 font-weight: bold;
                 text-decoration: none;
@@ -1569,6 +1541,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
+                <p>광고책임자: 김호제 변호사</p>
                 <p>&copy; 2024 법무법인 태윤. All rights reserved.</p>
             </div>
         </div>
@@ -1680,14 +1653,7 @@
     <!-- 모바일 하단 띠지 -->
     <div class="mobile-sticky-bar">
         <div class="mobile-sticky-bar-container">
-            <div class="mobile-sticky-bar-left">
-                <!-- 카톡 신청 부분 주석 (비활성화)
-                <a href="http://pf.kakao.com/_inbpn/chat" target="_blank">카톡상담</a>
-                -->
-            </div>
-            <div class="mobile-sticky-bar-right">
-                <a href="#contact" onclick="scrollToContact(); return false;">1:1상담신청 ></a>
-            </div>
+            <a href="#contact" class="mobile-sticky-bar-cta" onclick="scrollToContact(); return false;">나도 가능할까? (클릭)</a>
         </div>
     </div>
 
