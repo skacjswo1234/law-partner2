@@ -636,6 +636,27 @@
             border-color: #030530;
         }
 
+        .contact-form-privacy {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .contact-form-privacy input[type="checkbox"] {
+            width: auto;
+            margin-top: 4px;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .contact-form-privacy label {
+            display: inline;
+            margin-bottom: 0;
+            font-weight: normal;
+            cursor: pointer;
+            line-height: 1.5;
+        }
+
         .submit-btn {
             width: 100%;
             padding: 15px;
@@ -1479,38 +1500,10 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="income">월소득 *</label>
-                    <input type="text" id="income" name="income" required aria-required="true" placeholder="월소득을 입력해주세요">
-                </div>
-                <div class="form-group">
-                    <label for="debt">채무금액 *</label>
-                    <select id="debt" name="debt" required aria-required="true">
-                        <option value="">선택해주세요</option>
-                        <option value="1000만원~3000만원">1000만원~3000만원</option>
-                        <option value="3000-5000만원">3000-5000만원</option>
-                        <option value="5000-8000만원">5000-8000만원</option>
-                        <option value="8000만원 이상">8000만원 이상</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="consultation_time">상담 가능시간 *</label>
-                    <select id="consultation_time" name="consultation_time" required aria-required="true">
-                        <option value="">선택해주세요</option>
-                        <option value="09-11시">09-11시</option>
-                        <option value="11-13시">11-13시</option>
-                        <option value="13-15시">13-15시</option>
-                        <option value="15-17시">15-17시</option>
-                        <option value="17-19시">17-19시</option>
-                        <option value="19-21시">19-21시</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="overdue">연체여부 *</label>
-                    <select id="overdue" name="overdue" required aria-required="true">
-                        <option value="">선택해주세요</option>
-                        <option value="O">O (연체 있음)</option>
-                        <option value="X">X (연체 없음)</option>
-                    </select>
+                    <div class="contact-form-privacy">
+                        <input type="checkbox" id="privacy" name="privacy" required aria-required="true">
+                        <label for="privacy">정보 수집 동의 *</label>
+                    </div>
                 </div>
                 <button type="submit" class="submit-btn" aria-label="상담 신청하기 버튼">상담 신청하기</button>
             </form>
@@ -1576,36 +1569,6 @@
                                 <option value="알바">알바</option>
                                 <option value="사업소득">사업소득</option>
                                 <option value="무직">무직</option>
-                            </select>
-                        </div>
-                        <div class="sticky-bar-input-row">
-                            <input type="text" id="sticky_income" name="sticky_income" placeholder="월소득 입력">
-                        </div>
-                        <div class="sticky-bar-input-row">
-                            <select id="sticky_debt" name="sticky_debt">
-                                <option value="">채무금액 선택</option>
-                                <option value="1000만원~3000만원">1000만원~3000만원</option>
-                                <option value="3000-5000만원">3000-5000만원</option>
-                                <option value="5000-8000만원">5000-8000만원</option>
-                                <option value="8000만원 이상">8000만원 이상</option>
-                            </select>
-                        </div>
-                        <div class="sticky-bar-input-row">
-                            <select id="sticky_consultation_time" name="sticky_consultation_time">
-                                <option value="">상담가능시간 선택</option>
-                                <option value="09-11시">09-11시</option>
-                                <option value="11-13시">11-13시</option>
-                                <option value="13-15시">13-15시</option>
-                                <option value="15-17시">15-17시</option>
-                                <option value="17-19시">17-19시</option>
-                                <option value="19-21시">19-21시</option>
-                            </select>
-                        </div>
-                        <div class="sticky-bar-input-row">
-                            <select id="sticky_overdue" name="sticky_overdue">
-                                <option value="">연체여부 선택</option>
-                                <option value="O">O (연체 있음)</option>
-                                <option value="X">X (연체 없음)</option>
                             </select>
                         </div>
                     </div>
@@ -1848,18 +1811,12 @@
                 var nameEl = document.getElementById('name');
                 var phoneEl = document.getElementById('phone');
                 var jobEl = document.getElementById('job');
-                var incomeEl = document.getElementById('income');
-                var debtEl = document.getElementById('debt');
-                var timeEl = document.getElementById('consultation_time');
-                var overdueEl = document.getElementById('overdue');
+                var privacyEl = document.getElementById('privacy');
                 var formData = {
                     name: nameEl ? nameEl.value : '',
                     phone: phoneEl ? phoneEl.value : '',
                     job: jobEl ? jobEl.value : '',
-                    income: incomeEl ? incomeEl.value : '',
-                    debt: debtEl ? debtEl.value : '',
-                    consultation_time: timeEl ? timeEl.value : '',
-                    overdue: overdueEl ? overdueEl.value : ''
+                    privacy: (privacyEl && privacyEl.checked) ? '동의' : ''
                 };
                 submitToGoogleSheet(formData, event.target);
             } catch (err) {
@@ -2237,14 +2194,10 @@
             const name = document.getElementById('sticky_name').value;
             const phone = document.getElementById('sticky_phone').value;
             const job = document.getElementById('sticky_job').value;
-            const income = document.getElementById('sticky_income').value;
-            const debt = document.getElementById('sticky_debt').value;
-            const consultation_time = document.getElementById('sticky_consultation_time').value;
-            const overdue = document.getElementById('sticky_overdue').value;
             const privacy = document.getElementById('sticky_privacy').checked;
 
-            if (!name || !phone || !job || !income || !debt || !consultation_time || !overdue) {
-                alert('모든 항목을 입력해주세요.');
+            if (!name || !phone || !job) {
+                alert('이름, 연락처, 직업을 입력해주세요.');
                 return;
             }
 
@@ -2257,10 +2210,7 @@
                 name: name,
                 phone: phone,
                 job: job,
-                income: income,
-                debt: debt,
-                consultation_time: consultation_time,
-                overdue: overdue
+                privacy: '동의'
             };
             
             // 전환 이벤트는 사용자가 제출 버튼을 눌렀을 때 실행 (API 성공 여부와 무관)
@@ -2281,10 +2231,6 @@
             document.getElementById('sticky_name').value = '';
             document.getElementById('sticky_phone').value = '';
             document.getElementById('sticky_job').value = '';
-            document.getElementById('sticky_income').value = '';
-            document.getElementById('sticky_debt').value = '';
-            document.getElementById('sticky_consultation_time').value = '';
-            document.getElementById('sticky_overdue').value = '';
             document.getElementById('sticky_privacy').checked = false;
         }
 
