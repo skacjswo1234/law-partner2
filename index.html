@@ -554,6 +554,63 @@
             transition: opacity 0.8s ease, transform 0.8s ease;
         }
 
+        /* 실제 결정문 사례 섹션 */
+        .success-case-section {
+            width: 100%;
+            padding: 48px 0 40px;
+            background: #0d0d1f;
+            overflow: hidden;
+        }
+
+        .success-case-title {
+            text-align: center;
+            color: #ffffff;
+            font-size: 34px;
+            font-weight: 800;
+            margin-bottom: 26px;
+            font-family: 'Paperlogy', 'Gmarket Sans', 'Malgun Gothic', '맑은 고딕', sans-serif;
+            letter-spacing: -0.02em;
+        }
+
+        .success-case-slider {
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .success-case-track {
+            display: flex;
+            gap: 20px;
+            width: max-content;
+            animation: successSlideRight 22s linear infinite;
+            will-change: transform;
+        }
+
+        .success-case-track:hover {
+            animation-play-state: paused;
+        }
+
+        .success-case-item {
+            flex: 0 0 auto;
+            width: 280px;
+        }
+
+        .success-case-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 12px;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.32);
+        }
+
+        @keyframes successSlideRight {
+            0% {
+                transform: translateX(calc(-50% - 10px));
+            }
+            100% {
+                transform: translateX(0);
+            }
+        }
+
         .discount-slider-section.animate .discount-card-section {
             opacity: 1;
             transform: translateY(0);
@@ -1300,6 +1357,24 @@
                 border-radius: 8px;
             }
 
+            .success-case-section {
+                padding: 36px 0 28px;
+            }
+
+            .success-case-title {
+                font-size: 24px;
+                margin-bottom: 18px;
+            }
+
+            .success-case-track {
+                gap: 14px;
+                animation-duration: 18s;
+            }
+
+            .success-case-item {
+                width: 200px;
+            }
+
             .section-title {
                 font-size: 24px;
                 margin-bottom: 30px;
@@ -1570,6 +1645,44 @@
                 </div>
             </div>
         </div>
+        <section class="success-case-section" aria-label="실제 결정문 사례">
+            <h2 class="success-case-title">실제 결정문 사례</h2>
+            <div class="success-case-slider">
+                <div class="success-case-track">
+                    <div class="success-case-item">
+                        <img src="images/success/1.webp" alt="실제 결정문 사례 1">
+                    </div>
+                    <div class="success-case-item">
+                        <img src="images/success/2.webp" alt="실제 결정문 사례 2">
+                    </div>
+                    <div class="success-case-item">
+                        <img src="images/success/3.webp" alt="실제 결정문 사례 3">
+                    </div>
+                    <div class="success-case-item">
+                        <img src="images/success/4.webp" alt="실제 결정문 사례 4">
+                    </div>
+                    <div class="success-case-item">
+                        <img src="images/success/5.webp" alt="실제 결정문 사례 5">
+                    </div>
+                    <!-- 무한 루프를 위한 복제 -->
+                    <div class="success-case-item">
+                        <img src="images/success/1.webp" alt="실제 결정문 사례 1">
+                    </div>
+                    <div class="success-case-item">
+                        <img src="images/success/2.webp" alt="실제 결정문 사례 2">
+                    </div>
+                    <div class="success-case-item">
+                        <img src="images/success/3.webp" alt="실제 결정문 사례 3">
+                    </div>
+                    <div class="success-case-item">
+                        <img src="images/success/4.webp" alt="실제 결정문 사례 4">
+                    </div>
+                    <div class="success-case-item">
+                        <img src="images/success/5.webp" alt="실제 결정문 사례 5">
+                    </div>
+                </div>
+            </div>
+        </section>
         <section id="services"></section>
         <img src="images/pc/h-2.png" alt="법무법인 태윤 서비스 소개 - 채무조정 개인회생 신용회복 법률상담" class="section-image pc">
         <img src="images/mob/h-2-m.png" alt="법무법인 태윤 서비스 소개 - 채무조정 개인회생 신용회복 법률상담" class="section-image mobile">
