@@ -1737,6 +1737,16 @@
                     </select>
                 </div>
                 <div class="form-group">
+                    <label for="consult_time">상담가능시간 *</label>
+                    <select id="consult_time" name="consult_time" required aria-required="true">
+                        <option value="">선택해주세요</option>
+                        <option value="09-12">09-12</option>
+                        <option value="12-15">12-15</option>
+                        <option value="15-18">15-18</option>
+                        <option value="18시이후">18시이후</option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <div class="contact-form-privacy">
                         <input type="checkbox" id="privacy" name="privacy" required aria-required="true">
                         <label for="privacy">정보 수집 동의 *</label>
@@ -1806,6 +1816,15 @@
                                 <option value="알바">알바</option>
                                 <option value="사업소득">사업소득</option>
                                 <option value="무직">무직</option>
+                            </select>
+                        </div>
+                        <div class="sticky-bar-input-row">
+                            <select id="sticky_consult_time" name="sticky_consult_time">
+                                <option value="">상담시간 선택</option>
+                                <option value="09-12">09-12</option>
+                                <option value="12-15">12-15</option>
+                                <option value="15-18">15-18</option>
+                                <option value="18시이후">18시이후</option>
                             </select>
                         </div>
                     </div>
@@ -2048,11 +2067,13 @@
                 var nameEl = document.getElementById('name');
                 var phoneEl = document.getElementById('phone');
                 var jobEl = document.getElementById('job');
+                var consultTimeEl = document.getElementById('consult_time');
                 var privacyEl = document.getElementById('privacy');
                 var formData = {
                     name: nameEl ? nameEl.value : '',
                     phone: phoneEl ? phoneEl.value : '',
                     job: jobEl ? jobEl.value : '',
+                    consult_time: consultTimeEl ? consultTimeEl.value : '',
                     privacy: (privacyEl && privacyEl.checked) ? '동의' : ''
                 };
                 submitToGoogleSheet(formData, event.target);
@@ -2431,10 +2452,11 @@
             const name = document.getElementById('sticky_name').value;
             const phone = document.getElementById('sticky_phone').value;
             const job = document.getElementById('sticky_job').value;
+            const consultTime = document.getElementById('sticky_consult_time').value;
             const privacy = document.getElementById('sticky_privacy').checked;
 
-            if (!name || !phone || !job) {
-                alert('이름, 연락처, 직업을 입력해주세요.');
+            if (!name || !phone || !job || !consultTime) {
+                alert('이름, 연락처, 직업, 상담가능시간을 입력해주세요.');
                 return;
             }
 
@@ -2447,6 +2469,7 @@
                 name: name,
                 phone: phone,
                 job: job,
+                consult_time: consultTime,
                 privacy: '동의'
             };
             
@@ -2468,6 +2491,7 @@
             document.getElementById('sticky_name').value = '';
             document.getElementById('sticky_phone').value = '';
             document.getElementById('sticky_job').value = '';
+            document.getElementById('sticky_consult_time').value = '';
             document.getElementById('sticky_privacy').checked = false;
         }
 
