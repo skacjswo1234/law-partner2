@@ -848,6 +848,67 @@
             background: #040638;
         }
 
+        .submit-btn:disabled,
+        .sticky-bar-submit-btn:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        /* 문의 제출 로딩 (중복 방지) */
+        .form-submit-loading {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(13, 13, 31, 0.72);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .form-submit-loading.show {
+            display: flex;
+        }
+
+        .form-submit-loading-box {
+            width: 100%;
+            max-width: 320px;
+            background: #fff;
+            border-radius: 12px;
+            padding: 28px 24px;
+            text-align: center;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        .form-submit-loading-text {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0d0d1f;
+            margin-bottom: 20px;
+        }
+
+        .form-submit-loading-bar {
+            width: 100%;
+            height: 6px;
+            background: #e8e8ef;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .form-submit-loading-bar-fill {
+            height: 100%;
+            width: 40%;
+            background: linear-gradient(90deg, #030530, #3d4a9e);
+            border-radius: 999px;
+            animation: formSubmitLoadingBar 1.1s ease-in-out infinite;
+        }
+
+        @keyframes formSubmitLoadingBar {
+            0% { transform: translateX(-120%); }
+            100% { transform: translateX(320%); }
+        }
+
         /* 푸터 */
         footer {
             background: #0d0d1f;
@@ -1887,6 +1948,16 @@
         </a>
     </div>
 
+    <!-- 문의 제출 로딩 -->
+    <div id="formSubmitLoading" class="form-submit-loading" aria-hidden="true" aria-live="polite" aria-busy="false">
+        <div class="form-submit-loading-box">
+            <p class="form-submit-loading-text">상담 신청 처리 중...</p>
+            <div class="form-submit-loading-bar" role="progressbar" aria-label="제출 진행 중">
+                <div class="form-submit-loading-bar-fill"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- 성공 모달 -->
     <div class="success-modal" id="successModal">
         <div class="success-modal-content">
@@ -2049,9 +2120,38 @@
             overlay.classList.toggle('active');
         }
 
+        var formSubmitInProgress = false;
+
+        function showFormSubmitLoading() {
+            var overlay = document.getElementById('formSubmitLoading');
+            if (overlay) {
+                overlay.classList.add('show');
+                overlay.setAttribute('aria-hidden', 'false');
+                overlay.setAttribute('aria-busy', 'true');
+            }
+            document.querySelectorAll('.submit-btn, .sticky-bar-submit-btn').forEach(function(btn) {
+                btn.disabled = true;
+            });
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideFormSubmitLoading() {
+            var overlay = document.getElementById('formSubmitLoading');
+            if (overlay) {
+                overlay.classList.remove('show');
+                overlay.setAttribute('aria-hidden', 'true');
+                overlay.setAttribute('aria-busy', 'false');
+            }
+            document.querySelectorAll('.submit-btn, .sticky-bar-submit-btn').forEach(function(btn) {
+                btn.disabled = false;
+            });
+            document.body.style.overflow = '';
+        }
+
         // 폼 제출 처리
         function handleSubmit(event) {
             event.preventDefault();
+            if (formSubmitInProgress) return;
             // 전환 이벤트는 사용자가 제출 버튼을 눌렀을 때 실행 (API 성공 여부와 무관)
             try {
                 if (window.karrotPixel && typeof window.karrotPixel.track === 'function') {
@@ -2079,13 +2179,21 @@
                 submitToGoogleSheet(formData, event.target);
             } catch (err) {
                 console.error('handleSubmit:', err);
+                hideFormSubmitLoading();
+                formSubmitInProgress = false;
                 // 전환 이벤트는 제출 버튼 클릭 시 이미 전송됨 (오류 발생 후에도 별도 전송 없음)
                 alert('상담 신청 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
             }
         }
         
         // 구글 시트로 데이터 전송 (iframe POST 방식 - CORS 이슈 없이 동작)
-        function submitToGoogleSheet(formData, formElement) {
+        function submitToGoogleSheet(formData, formElement, onComplete) {
+            if (formSubmitInProgress) {
+                console.log('[문의폼] 이미 제출 처리 중 (중복 방지)');
+                return;
+            }
+            formSubmitInProgress = true;
+            showFormSubmitLoading();
             try {
                 var webAppUrl = 'https://script.google.com/macros/s/AKfycbzgvEaTGFqp8lIZiwA7B5JwGI0RSiswi6f1X267lrtjWrrW9j1N1OvcnbRNpKLbAlhSRg/exec';
                 
@@ -2119,9 +2227,12 @@
                 function onDone() {
                     if (done) return;
                     done = true;
+                    hideFormSubmitLoading();
+                    formSubmitInProgress = false;
                     try {
                         showSuccessModal();
                         if (formElement && typeof formElement.reset === 'function') formElement.reset();
+                        if (typeof onComplete === 'function') onComplete();
                         console.log('[문의폼] 제출 처리 완료, 성공 모달 표시');
                     } catch (e) {
                         console.error('showSuccessModal:', e);
@@ -2139,6 +2250,8 @@
                 form.submit();
             } catch (err) {
                 console.error('submitToGoogleSheet:', err);
+                hideFormSubmitLoading();
+                formSubmitInProgress = false;
                 alert('상담 신청 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
             }
         }
@@ -2449,6 +2562,7 @@
 
         // 하단 띠 폼 제출 처리
         function handleStickySubmit() {
+            if (formSubmitInProgress) return;
             const name = document.getElementById('sticky_name').value;
             const phone = document.getElementById('sticky_phone').value;
             const job = document.getElementById('sticky_job').value;
@@ -2485,14 +2599,13 @@
                 console.error('당근마켓 픽셀 전환 이벤트 오류:', pixelError);
             }
             
-            submitToGoogleSheet(formData, null);
-            
-            // 폼 초기화
-            document.getElementById('sticky_name').value = '';
-            document.getElementById('sticky_phone').value = '';
-            document.getElementById('sticky_job').value = '';
-            document.getElementById('sticky_consult_time').value = '';
-            document.getElementById('sticky_privacy').checked = false;
+            submitToGoogleSheet(formData, null, function() {
+                document.getElementById('sticky_name').value = '';
+                document.getElementById('sticky_phone').value = '';
+                document.getElementById('sticky_job').value = '';
+                document.getElementById('sticky_consult_time').value = '';
+                document.getElementById('sticky_privacy').checked = false;
+            });
         }
 
         // 스크롤 시 Top 버튼 표시/숨김
