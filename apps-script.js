@@ -6,6 +6,14 @@
 // ============================================
 
 var SPREADSHEET_ID = "1MMNGsUWuX79K_g6G-uA4GNyhRmZaGcPb_8C-_dsnya4";
+var SHEET_HEADERS = [
+  "제출일시",
+  "이름",
+  "전화번호",
+  "직업",
+  "상담가능시간",
+  "정보수집동의"
+];
 
 // GET 요청 (헬스체크·테스트용)
 function doGet(e) {
@@ -20,25 +28,7 @@ function doPost(e) {
     var spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
     var sheet = spreadsheet.getActiveSheet();
     var postData = (e && e.parameter) ? e.parameter : {};
-
-    if (sheet.getLastRow() === 0) {
-      var headers = [
-        "제출일시",
-        "이름",
-        "전화번호",
-        "직업",
-        "상담가능시간",
-        "정보수집동의"
-      ];
-      sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-      var headerRange = sheet.getRange(1, 1, 1, headers.length);
-      headerRange.setFontWeight("bold");
-      headerRange.setBackground("#4285f4");
-      headerRange.setFontColor("#ffffff");
-      for (var i = 1; i <= headers.length; i++) {
-        sheet.autoResizeColumn(i);
-      }
-    }
+    ensureSheetHeaders(sheet);
 
     var timestamp = new Date();
     var rowData = [
@@ -64,6 +54,38 @@ function doPost(e) {
       success: false,
       error: error.toString()
     })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function ensureSheetHeaders(sheet) {
+  if (sheet.getLastRow() === 0) {
+    sheet.getRange(1, 1, 1, SHEET_HEADERS.length).setValues([SHEET_HEADERS]);
+    formatHeaderRange(sheet);
+    return;
+  }
+
+  var headerValues = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), SHEET_HEADERS.length)).getValues()[0];
+  if (headerValues.indexOf("상담가능시간") === -1) {
+    var privacyIndex = headerValues.indexOf("정보수집동의") + 1;
+    if (privacyIndex > 0) {
+      sheet.insertColumnBefore(privacyIndex);
+      sheet.getRange(1, privacyIndex).setValue("상담가능시간");
+    } else {
+      sheet.getRange(1, SHEET_HEADERS.length).setValue("상담가능시간");
+    }
+  }
+
+  sheet.getRange(1, 1, 1, SHEET_HEADERS.length).setValues([SHEET_HEADERS]);
+  formatHeaderRange(sheet);
+}
+
+function formatHeaderRange(sheet) {
+  var headerRange = sheet.getRange(1, 1, 1, SHEET_HEADERS.length);
+  headerRange.setFontWeight("bold");
+  headerRange.setBackground("#4285f4");
+  headerRange.setFontColor("#ffffff");
+  for (var i = 1; i <= SHEET_HEADERS.length; i++) {
+    sheet.autoResizeColumn(i);
   }
 }
 
@@ -103,22 +125,7 @@ function setupSheetHeaders() {
   try {
     var spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
     var sheet = spreadsheet.getActiveSheet();
-    var headers = [
-      "제출일시",
-      "이름",
-      "전화번호",
-      "직업",
-      "상담가능시간",
-      "정보수집동의"
-    ];
-    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-    var headerRange = sheet.getRange(1, 1, 1, headers.length);
-    headerRange.setFontWeight("bold");
-    headerRange.setBackground("#4285f4");
-    headerRange.setFontColor("#ffffff");
-    for (var i = 1; i <= headers.length; i++) {
-      sheet.autoResizeColumn(i);
-    }
+    ensureSheetHeaders(sheet);
     Logger.log("법무법인 태윤 시트 헤더 설정 완료");
     return "시트 헤더 설정 완료";
   } catch (error) {
