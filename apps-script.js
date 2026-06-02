@@ -27,6 +27,7 @@ function doPost(e) {
         "이름",
         "전화번호",
         "직업",
+        "상담가능시간",
         "정보수집동의"
       ];
       sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
@@ -45,6 +46,7 @@ function doPost(e) {
       postData.name || "",
       postData.phone || "",
       postData.job || "",
+      postData.consult_time || "",
       postData.privacy || ""
     ];
 
@@ -70,7 +72,7 @@ function sendEmailNotification(rowData) {
   try {
     var toEmail = "bbong1019@gmail.com";
     var subject = "[법무법인 태윤] 새 상담 문의가 접수되었습니다";
-    var labels = ["제출일시", "이름", "전화번호", "직업", "정보수집동의"];
+    var labels = ["제출일시", "이름", "전화번호", "직업", "상담가능시간", "정보수집동의"];
     var lines = [
       "법무법인 태윤 홈페이지에서 새로운 상담 신청이 접수되었습니다.",
       "",
@@ -106,6 +108,7 @@ function setupSheetHeaders() {
       "이름",
       "전화번호",
       "직업",
+      "상담가능시간",
       "정보수집동의"
     ];
     sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
