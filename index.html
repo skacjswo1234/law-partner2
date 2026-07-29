@@ -612,61 +612,88 @@
         }
 
         .certificate-section {
-            width: 100%;
-            padding: 48px 20px 56px;
-            background: #12122a;
-            box-sizing: border-box;
+            background: #f7f8fb;
+            padding: 50px 20px 60px;
         }
 
-        .certificate-inner {
-            max-width: 980px;
+        .certificate-container {
+            max-width: 960px;
             margin: 0 auto;
         }
 
         .certificate-title {
             text-align: center;
-            color: #ffffff;
-            font-size: 34px;
-            font-weight: 800;
-            margin: 0 0 10px;
+            color: #030530;
+            font-size: 32px;
+            font-weight: bold;
             font-family: 'Paperlogy', 'Gmarket Sans', 'Malgun Gothic', '맑은 고딕', sans-serif;
             letter-spacing: -0.02em;
+            margin-bottom: 10px;
         }
 
         .certificate-subtitle {
             text-align: center;
-            color: rgba(255, 255, 255, 0.72);
+            color: #4a4a5a;
             font-size: 16px;
-            margin: 0 0 28px;
-            line-height: 1.5;
+            line-height: 1.6;
+            margin-bottom: 32px;
+            font-family: 'Gmarket Sans', 'Malgun Gothic', '맑은 고딕', sans-serif;
         }
 
         .certificate-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 24px;
-            align-items: stretch;
+            align-items: start;
         }
 
         .certificate-item {
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(3, 5, 48, 0.1);
             margin: 0;
         }
 
         .certificate-item img {
+            display: block;
             width: 100%;
             height: auto;
-            display: block;
-            border-radius: 12px;
-            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.36);
-            background: #fff;
+            cursor: zoom-in;
         }
 
-        .certificate-item figcaption {
-            margin-top: 12px;
+        .certificate-caption {
+            padding: 14px 16px 16px;
             text-align: center;
-            color: rgba(255, 255, 255, 0.78);
-            font-size: 14px;
-            line-height: 1.4;
+            color: #030530;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: 'Gmarket Sans', 'Malgun Gothic', '맑은 고딕', sans-serif;
+        }
+
+        .certificate-lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            background: rgba(0, 0, 0, 0.85);
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            cursor: zoom-out;
+        }
+
+        .certificate-lightbox.show {
+            display: flex;
+        }
+
+        .certificate-lightbox img {
+            max-width: min(920px, 100%);
+            max-height: 90vh;
+            width: auto;
+            height: auto;
+            border-radius: 6px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
         }
 
         .discount-slider-section.animate .discount-card-section {
@@ -1495,28 +1522,28 @@
             }
 
             .certificate-section {
-                padding: 36px 16px 40px;
+                padding: 36px 16px 44px;
             }
 
             .certificate-title {
                 font-size: 24px;
-                margin-bottom: 8px;
             }
 
             .certificate-subtitle {
                 font-size: 14px;
-                margin-bottom: 20px;
+                margin-bottom: 22px;
             }
 
             .certificate-grid {
                 grid-template-columns: 1fr;
-                gap: 18px;
+                gap: 16px;
                 max-width: 420px;
                 margin: 0 auto;
             }
 
-            .certificate-item figcaption {
-                font-size: 13px;
+            .certificate-caption {
+                font-size: 14px;
+                padding: 12px 14px 14px;
             }
 
             .section-title {
@@ -1828,21 +1855,24 @@
             </div>
         </section>
         <section class="certificate-section" aria-label="대한변호사협회 전문분야 등록증서">
-            <div class="certificate-inner">
+            <div class="certificate-container">
                 <h2 class="certificate-title">전문분야 등록증서</h2>
-                <p class="certificate-subtitle">대한변호사협회 도산 전문분야 등록 · 등록 제2026-495호</p>
+                <p class="certificate-subtitle">대한변호사협회 도산 전문분야 등록 · 김호제 변호사</p>
                 <div class="certificate-grid">
                     <figure class="certificate-item">
-                        <img src="images/certificates/specialty-cover.webp" alt="대한변호사협회 전문분야 등록증서 표지" loading="lazy" width="1094" height="1682">
-                        <figcaption>대한변호사협회</figcaption>
+                        <img src="images/certificates/kba-cover.webp" alt="대한변호사협회 전문분야 등록증서 표지" loading="lazy" onclick="openCertificateLightbox(this.src, this.alt)">
+                        <figcaption class="certificate-caption">대한변호사협회</figcaption>
                     </figure>
                     <figure class="certificate-item">
-                        <img src="images/certificates/specialty-certificate.webp" alt="김호제 변호사 도산 전문분야 등록증서" loading="lazy" width="1187" height="1682">
-                        <figcaption>전문분야: 도산</figcaption>
+                        <img src="images/certificates/specialty-certificate.webp" alt="김호제 변호사 도산 전문분야 등록증서" loading="lazy" onclick="openCertificateLightbox(this.src, this.alt)">
+                        <figcaption class="certificate-caption">전문분야 등록증서 (도산)</figcaption>
                     </figure>
                 </div>
             </div>
         </section>
+        <div class="certificate-lightbox" id="certificateLightbox" onclick="closeCertificateLightbox()" aria-hidden="true">
+            <img id="certificateLightboxImg" src="" alt="">
+        </div>
         <section id="services"></section>
         <img src="images/pc/h-2.png" alt="법무법인 태윤 서비스 소개 - 채무조정 개인회생 신용회복 법률상담" class="section-image pc">
         <img src="images/mob/h-2-m.png" alt="법무법인 태윤 서비스 소개 - 채무조정 개인회생 신용회복 법률상담" class="section-image mobile">
@@ -2419,6 +2449,27 @@
             const modal = document.getElementById('successModal');
             modal.classList.remove('show');
             document.body.style.overflow = ''; // 스크롤 복원
+        }
+
+        function openCertificateLightbox(src, alt) {
+            const lightbox = document.getElementById('certificateLightbox');
+            const img = document.getElementById('certificateLightboxImg');
+            if (!lightbox || !img) return;
+            img.src = src;
+            img.alt = alt || '';
+            lightbox.classList.add('show');
+            lightbox.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeCertificateLightbox() {
+            const lightbox = document.getElementById('certificateLightbox');
+            const img = document.getElementById('certificateLightboxImg');
+            if (!lightbox) return;
+            lightbox.classList.remove('show');
+            lightbox.setAttribute('aria-hidden', 'true');
+            if (img) img.src = '';
+            document.body.style.overflow = '';
         }
         
         // 모달 배경 클릭 시 닫기
