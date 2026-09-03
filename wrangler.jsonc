@@ -1,0 +1,27 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "lawmariel2-toss-webhook",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-03",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  "kv_namespaces": [
+    {
+      "binding": "LEAD_KV",
+      "id": "fc5efb45e91d4b78a74be1731ca159e3"
+    }
+  ],
+  "vars": {
+    "APPS_SCRIPT_URL": "https://script.google.com/macros/s/AKfycbzgvEaTGFqp8lIZiwA7B5JwGI0RSiswi6f1X267lrtjWrrW9j1N1OvcnbRNpKLbAlhSRg/exec"
+  },
+  "routes": [
+    {
+      "pattern": "lawmariel2.co.kr/api/toss-webhook",
+      "zone_name": "lawmariel2.co.kr"
+    }
+  ]
+}

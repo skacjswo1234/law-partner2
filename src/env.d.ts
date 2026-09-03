@@ -1,0 +1,7 @@
+interface Env {
+  LEAD_KV: KVNamespace;
+  APPS_SCRIPT_URL: string;
+  TOSS_ADS_WEBHOOK_SECRET_KEY: string;
+  TOSS_ADS_WEBHOOK_SECRET_KEY_PREV?: string;
+  APPS_SCRIPT_FORWARD_SECRET: string;
+}
